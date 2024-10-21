@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { store } from '../store';
 import { contentType } from '../constants';
 import { Status, User, ErrorType } from '../types';
-import { isString, isNumber, isArray } from './common';
+import { validateUser } from './validateUser';
 
 export const postUser = async (req: IncomingMessage, res: ServerResponse) => {
   try {
@@ -19,29 +19,9 @@ export const postUser = async (req: IncomingMessage, res: ServerResponse) => {
     req.on('end', () => {
       const parsedUser = JSON.parse(newUser);
 
-      const { username, age, hobbies } = parsedUser as Omit<User, 'id'>;
+      const { isValid, message } = validateUser(parsedUser, false);
 
-      const isValidName = !!username && isString(username);
-      const isValidAge = !!age && isNumber(age);
-      const isValidHobbies = isArray(hobbies) && hobbies.every(isString);
-
-      const getWrongBodyMessage = () => {
-        let message = 'wrong body: ';
-        if (!isValidName) {
-          message += `username has to be not an empty string; `;
-        }
-        if (!isValidAge) {
-          message += 'age has to a be number; ';
-        }
-        if (!isValidHobbies) {
-          message += `hobbies has to be an array of strings`;
-        }
-        return message;
-      };
-
-      const isValidUser = isValidName && isValidAge && isValidHobbies;
-
-      if (isValidUser) {
+      if (isValid) {
         const normalizedUser: User = {
           ...parsedUser,
           id: uuidv4(),
@@ -52,7 +32,7 @@ export const postUser = async (req: IncomingMessage, res: ServerResponse) => {
         res.end(JSON.stringify(normalizedUser));
       } else {
         res.writeHead(Status.INVALID, contentType);
-        res.end(JSON.stringify({ message: `Bad request: ${getWrongBodyMessage()}` }));
+        res.end(JSON.stringify({ message: `Bad request: ${message}` }));
       }
     });
   } catch (err) {

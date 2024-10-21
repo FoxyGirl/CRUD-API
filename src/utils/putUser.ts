@@ -1,11 +1,9 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { validate } from 'uuid';
-
 import { store } from '../store';
 import { contentType } from '../constants';
 import { Status, User, ErrorType } from '../types';
-import { isString, isNumber, isArray } from './common';
+import { validateUser } from './validateUser';
 
 export const putUser = async (req: IncomingMessage, res: ServerResponse) => {
   try {
@@ -19,13 +17,7 @@ export const putUser = async (req: IncomingMessage, res: ServerResponse) => {
     req.on('end', () => {
       const parsedUser = JSON.parse(newUser);
 
-      const { id, username, age, hobbies } = parsedUser as User;
-
-      const isValidName = !!username && isString(username);
-      const isValidAge = !!age && isNumber(age);
-      const isValidHobbies = isArray(hobbies) && hobbies.every(isString);
-      const isValidId = validate(id);
-
+      const { id } = parsedUser as User;
       const hasUser = store.hasUser(id);
 
       if (!hasUser) {
@@ -34,33 +26,15 @@ export const putUser = async (req: IncomingMessage, res: ServerResponse) => {
         return;
       }
 
-      // TODO: refactor
-      const getWrongBodyMessage = () => {
-        let message = 'wrong body: ';
-        if (!isValidId) {
-          message += `id has to be an uuid`;
-        }
-        if (!isValidName) {
-          message += `username has to be not an empty string; `;
-        }
-        if (!isValidAge) {
-          message += 'age has to a be number; ';
-        }
-        if (!isValidHobbies) {
-          message += `hobbies has to be an array of strings`;
-        }
-        return message;
-      };
+      const { isValid, message } = validateUser(parsedUser);
 
-      const isValidUser = isValidName && isValidAge && isValidHobbies && isValidId;
-
-      if (isValidUser) {
+      if (isValid) {
         store.updateUser(parsedUser);
         res.writeHead(Status.OK, contentType);
         res.end(JSON.stringify(parsedUser));
       } else {
         res.writeHead(Status.INVALID, contentType);
-        res.end(JSON.stringify({ message: `Bad request: ${getWrongBodyMessage()}` }));
+        res.end(JSON.stringify({ message: `Bad request: ${message}` }));
       }
     });
   } catch (err) {
