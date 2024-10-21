@@ -25,6 +25,20 @@ export const postUser = async (req: IncomingMessage, res: ServerResponse) => {
       const isValidAge = !!age && isNumber(age);
       const isValidHobbies = isArray(hobbies) && hobbies.every(isString);
 
+      const getWrongBodyMessage = () => {
+        let message = 'wrong body: ';
+        if (!isValidName) {
+          message += `username has to be not an empty string; `;
+        }
+        if (!isValidAge) {
+          message += 'age has to a be number; ';
+        }
+        if (!isValidHobbies) {
+          message += `hobbies has to be an array of strings`;
+        }
+        return message;
+      };
+
       const isValidUser = isValidName && isValidAge && isValidHobbies;
 
       if (isValidUser) {
@@ -38,8 +52,7 @@ export const postUser = async (req: IncomingMessage, res: ServerResponse) => {
         res.end(JSON.stringify(normalizedUser));
       } else {
         res.writeHead(Status.INVALID, contentType);
-        // TODO: refactor error message
-        res.end(JSON.stringify({ message: 'Server error: wrong body' }));
+        res.end(JSON.stringify({ message: `Bad request: ${getWrongBodyMessage()}` }));
       }
     });
   } catch (err) {
