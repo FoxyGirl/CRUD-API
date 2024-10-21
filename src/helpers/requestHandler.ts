@@ -2,7 +2,7 @@ import http from 'http';
 
 import { API, Status } from '../types';
 import { basePath, endpoint, contentType } from '../constants';
-import { getUsers, getUserById } from '../utils';
+import { getUsers, getUserById, deleteUser } from '../utils';
 
 export const requestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => {
   const { url, method } = req;
@@ -38,11 +38,16 @@ export const requestHandler = (req: http.IncomingMessage, res: http.ServerRespon
 
       if (params.length === 1) {
         const userId = params[0];
-        console.log('>>> userId', userId);
-
         getUserById(userId, res);
         break;
       }
+    }
+
+    case API.DELETE: {
+      const userId = params[0] || '';
+
+      deleteUser(userId, res);
+      break;
     }
 
     default: {
