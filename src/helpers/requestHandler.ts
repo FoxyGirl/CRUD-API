@@ -1,7 +1,7 @@
 import http from 'http';
 
-import { API } from '../types';
-import { basePath, endpoint } from '../constants';
+import { API, Status } from '../types';
+import { basePath, endpoint, contentType } from '../constants';
 import { getUsers, getUserById } from '../utils';
 
 export const requestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => {
@@ -19,7 +19,7 @@ export const requestHandler = (req: http.IncomingMessage, res: http.ServerRespon
   const [action, ...params] = rest;
 
   if (baseUrl !== basePath || action !== endpoint) {
-    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.writeHead(Status.NOT_FOUND, contentType);
     res.end(JSON.stringify({ message: 'Endpoint not found' }));
     return;
   }
@@ -48,7 +48,7 @@ export const requestHandler = (req: http.IncomingMessage, res: http.ServerRespon
     default: {
       console.log('>>> default');
 
-      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.writeHead(Status.NOT_FOUND, contentType);
       res.end(JSON.stringify({ message: 'Endpoint not found' }));
       break;
     }

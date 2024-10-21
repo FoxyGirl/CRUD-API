@@ -10,3 +10,5 @@ export const testUser: User = {
   age: 25,
   hobbies: ['nodej'],
 };
+
+export const contentType = { 'Content-Type': 'application/json' };
