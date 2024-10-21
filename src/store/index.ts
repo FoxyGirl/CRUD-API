@@ -25,6 +25,14 @@ class UsersStore {
   addUser(newUser: User) {
     this._users.push(newUser);
   }
+
+  updateUser(updatedUser: User) {
+    this._users = this._users.map((item) => (item.id === updatedUser.id ? updatedUser : item));
+  }
+
+  hasUser(id: string) {
+    return this._users.some((item) => item.id === id);
+  }
 }
 
 export const store = new UsersStore();

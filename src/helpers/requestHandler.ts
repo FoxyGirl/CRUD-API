@@ -2,7 +2,7 @@ import http from 'http';
 
 import { API, Status } from '../types';
 import { basePath, endpoint, contentType } from '../constants';
-import { getUsers, getUserById, deleteUser, postUser } from '../utils';
+import { getUsers, getUserById, deleteUser, postUser, putUser } from '../utils';
 
 export const requestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => {
   const { url, method } = req;
@@ -53,6 +53,16 @@ export const requestHandler = (req: http.IncomingMessage, res: http.ServerRespon
     case API.POST: {
       if (params.length === 0) {
         postUser(req, res);
+      } else {
+        res.writeHead(Status.ERROR, contentType);
+        res.end(JSON.stringify({ message: `Server error` }));
+      }
+      break;
+    }
+
+    case API.PUT: {
+      if (params.length === 0) {
+        putUser(req, res);
       } else {
         res.writeHead(Status.ERROR, contentType);
         res.end(JSON.stringify({ message: `Server error` }));

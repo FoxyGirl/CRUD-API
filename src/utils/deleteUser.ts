@@ -11,9 +11,9 @@ export const deleteUser = (id: string, res: http.ServerResponse) => {
     return;
   }
 
-  const user = store.getUser(id);
+  const hasUser = store.hasUser(id);
 
-  if (user) {
+  if (hasUser) {
     store.deleteUser(id);
     res.writeHead(Status.OK_DELETE, contentType);
     res.end(JSON.stringify({ message: 'User has been deleted' }));
