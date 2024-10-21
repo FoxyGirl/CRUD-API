@@ -1,5 +1,8 @@
 import http from 'http';
+
+import { API } from '../types';
 import { basePath } from '../constants';
+import { getUsers } from '../utils';
 
 export const requestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => {
   const { url, method } = req;
@@ -26,13 +29,11 @@ export const requestHandler = (req: http.IncomingMessage, res: http.ServerRespon
 
   switch (action) {
     case 'users': {
-      if (req.method === 'GET') {
+      if (req.method === API.GET) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-
-        res.end('Test !!');
+        res.end(getUsers());
       } else {
         res.writeHead(500, { 'Content-Type': 'application/json' });
-
         res.end(JSON.stringify({ message: 'Server Error' }));
       }
 

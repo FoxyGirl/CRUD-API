@@ -1,7 +1,7 @@
 import http from 'http';
 import * as dotenv from 'dotenv';
 
-import { requestHandler } from './utils';
+import { requestHandler } from './helpers';
 
 dotenv.config();
 

@@ -1,1 +1,1 @@
-export * from './requestHandler';
+export * from './getUsers';
