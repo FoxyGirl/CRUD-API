@@ -1,12 +1,12 @@
 import http from 'http';
 
 import { API } from '../types';
-import { basePath } from '../constants';
-import { getUsers } from '../utils';
+import { basePath, endpoint } from '../constants';
+import { getUsers, getUserById } from '../utils';
 
 export const requestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => {
   const { url, method } = req;
-  console.log('==== requestHandler url >', url, '<');
+  console.log('\n==== requestHandler url >', url, '<');
 
   const urlParts: string[] = url ? url.slice(1).split('/') : [];
   console.log('requestHandler urlParts', urlParts);
@@ -16,30 +16,38 @@ export const requestHandler = (req: http.IncomingMessage, res: http.ServerRespon
 
   console.log('requestHandler baseUrl', baseUrl);
 
-  if (baseUrl !== basePath) {
+  const [action, ...params] = rest;
+
+  if (baseUrl !== basePath || action !== endpoint) {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ message: 'Endpoint not found' }));
     return;
   }
 
-  const [action, ...params] = rest;
-
   console.log('==== requestHandler action', action);
   console.log('==== requestHandler params', params);
 
-  switch (action) {
-    case 'users': {
-      if (req.method === API.GET) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(getUsers());
-      } else {
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Server Error' }));
+  switch (method) {
+    case API.GET: {
+      console.log('>>> requestHandler method', API.GET);
+
+      if (params.length === 0) {
+        getUsers(res);
+        break;
       }
 
-      break;
+      if (params.length === 1) {
+        const userId = params[0];
+        console.log('>>> userId', userId);
+
+        getUserById(userId, res);
+        break;
+      }
     }
+
     default: {
+      console.log('>>> default');
+
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ message: 'Endpoint not found' }));
       break;
