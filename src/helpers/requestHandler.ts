@@ -53,6 +53,9 @@ export const requestHandler = (req: http.IncomingMessage, res: http.ServerRespon
     case API.POST: {
       if (params.length === 0) {
         postUser(req, res);
+      } else {
+        res.writeHead(Status.ERROR, contentType);
+        res.end(JSON.stringify({ message: `Server error` }));
       }
       break;
     }
