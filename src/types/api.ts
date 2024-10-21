@@ -4,3 +4,7 @@ export enum API {
   PUT = 'PUT',
   DELETE = 'DELETE',
 }
+
+export type ErrorType = {
+  message: string;
+};

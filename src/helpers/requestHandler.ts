@@ -2,7 +2,7 @@ import http from 'http';
 
 import { API, Status } from '../types';
 import { basePath, endpoint, contentType } from '../constants';
-import { getUsers, getUserById, deleteUser } from '../utils';
+import { getUsers, getUserById, deleteUser, postUser } from '../utils';
 
 export const requestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => {
   const { url, method } = req;
@@ -47,6 +47,13 @@ export const requestHandler = (req: http.IncomingMessage, res: http.ServerRespon
       const userId = params[0] || '';
 
       deleteUser(userId, res);
+      break;
+    }
+
+    case API.POST: {
+      if (params.length === 0) {
+        postUser(req, res);
+      }
       break;
     }
 

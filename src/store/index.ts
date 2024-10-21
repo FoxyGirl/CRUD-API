@@ -21,6 +21,10 @@ class UsersStore {
     this._users = this._users.filter((item) => item.id !== id);
     return;
   }
+
+  addUser(newUser: User) {
+    this._users.push(newUser);
+  }
 }
 
 export const store = new UsersStore();
